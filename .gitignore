@@ -1,7 +1,16 @@
-# Created by venv; see https://docs.python.org/3/library/venv.html
-# Ignore virtual environment and bytecode
-venv/
+# Data files
+data/
+
+# Environment files
+.env
+
+# Python artifacts
 __pycache__/
 *.pyc
-.env
-# Ignore Jupyter Notebook checkpoints
+*.pyo
+*.pyd
+*.pyc
+
+# IDE specific
+.vscode/
+.idea/
