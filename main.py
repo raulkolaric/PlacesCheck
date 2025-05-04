@@ -22,7 +22,10 @@ COLOR_PRIMARY = "#4E32FA"
 COLOR_SUCCESS = "#B7F800"
 COLOR_WARNING = "#F8BD00"
 
-# Supabase configuration
+# Fixed configuration
+TABLE_NAME = "google_places"
+COLUMN_NAME = "name"
+
 def get_supabase_client():
     try:
         config = dotenv_values(".env")
@@ -50,84 +53,89 @@ def show_menu():
     return console.input(f"\n[{COLOR_WARNING}]Select option (1-3): [/]")
 
 def fetch_data():
-    """Integrated fetch functionality"""
-    console.print(f"\n[{COLOR_PRIMARY}]» Fetching data...[/]")
+    """Fetch data using predefined table and column"""
+    console.print(f"\n[{COLOR_PRIMARY}]» Fetching place names...[/]")
     supabase = get_supabase_client()
     if not supabase:
+        console.input(f"\n[{COLOR_WARNING}]Press Enter to continue...")
         return
-
-    table_name = console.input("[bold]Enter table name: [/]")
-    column_name = console.input("[bold]Enter column name: [/]")
 
     try:
         data = []
         with Progress() as progress:
-            # Get count first
-            count = supabase.table(table_name).select(column_name, count='exact').execute().count
-            task = progress.add_task("[cyan]Fetching...", total=count)
-
+            # Get total count
+            count_res = supabase.table(TABLE_NAME)\
+                          .select(COLUMN_NAME, count='exact')\
+                          .execute()
+            total = count_res.count
+            
+            task = progress.add_task("[cyan]Fetching...", total=total)
+            
             # Fetch in batches
-            for offset in range(0, count, 1000):
-                batch = supabase.table(table_name)\
-                         .select(column_name)\
-                         .range(offset, offset+999)\
+            for offset in range(0, total, 1000):
+                batch = supabase.table(TABLE_NAME)\
+                         .select(COLUMN_NAME)\
+                         .range(offset, offset + 999)\
                          .execute()
-                data.extend([item[column_name] for item in batch.data])
+                data.extend([item[COLUMN_NAME] for item in batch.data])
                 progress.update(task, advance=len(batch.data))
 
         with open("fetched_data.json", "w", encoding="utf-8") as f:
             json.dump(data, f, indent=2)
-        console.print(f"[{COLOR_SUCCESS}]✓ Saved {len(data)} rows to fetched_data.json[/]")
+        console.print(f"[{COLOR_SUCCESS}]✓ Saved {len(data)} place names[/]")
 
     except Exception as e:
-        console.print(f"[red]Error: {e}[/]")
-    console.input(f"\n[{COLOR_WARNING}]Press Enter to continue...")
+        console.print(f"[red]Fetch error: {e}[/]")
+    finally:
+        console.input(f"\n[{COLOR_WARNING}]Press Enter to continue...")
 
 def compare_data():
-    """Integrated compare functionality"""
-    console.print(f"\n[{COLOR_PRIMARY}]» Comparing data...[/]")
+    """Compare data with insert.txt"""
+    console.print(f"\n[{COLOR_PRIMARY}]» Comparing place names...[/]")
     
     # Load fetched data
     try:
         with open("fetched_data.json", "r", encoding="utf-8") as f:
             db_names = set(json.load(f))
     except FileNotFoundError:
-        console.print("[red]Error: Run fetch first![/]")
+        console.print("[red]Error: No fetched data found. Run fetch first![/]")
         console.input(f"\n[{COLOR_WARNING}]Press Enter to continue...")
         return
 
-    # Load insert.txt
+    # Load and parse insert.txt
     try:
         with open("insert.txt", "r", encoding="utf-8") as f:
             content = f.read().strip()
-            lines = [line.strip() for line in content.split('\n') if line.strip()]
-            if len(lines) == 1:  # Handle comma-separated
-                lines = [item.strip() for item in content.split(',') if item.strip()]
-            check_names = [re.sub(r'^(\d+[.)]|\s*[-•*]\s*)', '', line).strip('"\'') for line in lines]
+            
+        # Parse any list format
+        lines = [line.strip() for line in content.split('\n') if line.strip()]
+        if len(lines) == 1:  # Handle comma-separated
+            lines = [item.strip() for item in content.split(',') if item.strip()]
+            
+        # Clean names
+        check_names = [re.sub(r'^(\d+[.)]|\s*[-•*]\s*)', '', line).strip('"\'').strip() 
+                      for line in lines if line.strip()]
     except FileNotFoundError:
-        console.print("[red]Error: Create insert.txt first![/]")
+        console.print("[red]Error: Missing insert.txt file[/]")
         console.input(f"\n[{COLOR_WARNING}]Press Enter to continue...")
         return
 
-    # Compare
+    # Compare and show results
     missing = [name for name in check_names if name not in db_names]
     
-    # Display results
     if missing:
-        table = Table(title="Missing Names", show_header=True, header_style="bold red")
-        table.add_column("No.", style="cyan")
-        table.add_column("Name")
+        console.print(f"[{COLOR_WARNING}]Missing {len(missing)} places:[/]")
         for i, name in enumerate(missing[:20], 1):  # Show first 20
-            table.add_row(str(i), name)
-        console.print(table)
-        console.print(f"[{COLOR_WARNING}]Found {len(missing)} missing names[/]")
+            console.print(f"  {i}. {name}")
+        if len(missing) > 20:
+            console.print(f"  ...and {len(missing)-20} more")
         
-        if console.input("Save to missing_names.txt? (y/n): ").lower() == 'y':
-            with open("missing_names.txt", "w", encoding="utf-8") as f:
+        if console.input("\nSave to missing_places.txt? (y/n): ").lower() == 'y':
+            with open("missing_places.txt", "w", encoding="utf-8") as f:
                 f.write('\n'.join(missing))
             console.print(f"[{COLOR_SUCCESS}]✓ Saved results[/]")
     else:
-        console.print(f"[{COLOR_SUCCESS}]✓ All names exist in database![/]")
+        console.print(f"[{COLOR_SUCCESS}]✓ All places exist in database![/]")
     
     console.input(f"\n[{COLOR_WARNING}]Press Enter to continue...")
 
