@@ -1,14 +1,25 @@
 import json
+import sys
+import io
 from pathlib import Path
 from supabase import create_client
 from dotenv import dotenv_values
 from rich.console import Console
 from rich.progress import Progress
 
-# Configure paths
 DATA_DIR = Path(__file__).parent.parent / "data"
 DATA_DIR.mkdir(exist_ok=True)
 console = Console()
+
+if sys.platform == "win32":
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
+
+try:
+    import win_unicode_console
+    win_unicode_console.enable()
+except ImportError:
+    pass
 
 def get_supabase_client():
     try:
@@ -49,10 +60,8 @@ def fetch_data():
         output_file = DATA_DIR / "fetched_data.json"
         with open(output_file, "w", encoding="utf-8") as f:
             json.dump(data, f, indent=2)
-        console.print(f"[green]✓ Saved {len(data)} place names to {output_file}[/]")
-
+            console.print(f"[green]✓[/] Saved {len(data)} place names to {output_file}")  # or use "[green]SUCCESS[/]"
     except Exception as e:
-        console.print(f"[red]Fetch error: {e}[/]")
-
+        console.print(f"[red]ERROR:[/] {str(e)}")
 if __name__ == "__main__":
     fetch_data()

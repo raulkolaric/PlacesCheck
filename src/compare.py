@@ -8,6 +8,12 @@ from rich.table import Table
 DATA_DIR = Path(__file__).parent.parent / "data"
 console = Console()
 
+try:
+    import win_unicode_console
+    win_unicode_console.enable()
+except ImportError:
+    pass
+
 def clean_name(name: str) -> str:
     """Clean and standardize names"""
     return re.sub(r'^(\d+[.)]|\s*[-•*]\s*)', '', name.strip()).strip('"\'')
