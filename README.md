@@ -37,7 +37,7 @@ A beautiful terminal application to verify place names against a Supabase databa
 ## 🚀 Usage
 
 ```bash
-python main.py
+python src\main.py
 ```
 
 ### Menu Options:
