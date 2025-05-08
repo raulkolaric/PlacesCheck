@@ -4,7 +4,7 @@
 ![Supabase](https://img.shields.io/badge/Supabase-3.0+-green.svg)
 ![Rich](https://img.shields.io/badge/Rich_TUI-13.0+-orange.svg)
 
-A beautiful terminal application to verify place names against a Supabase database, featuring a colorful TUI interface with progress tracking.
+A beautiful terminal application to verify place names against a set large Supabase database, featuring a colorful TUI interface with progress tracking. 
 
 ## ✨ Features
 
@@ -80,7 +80,3 @@ COLUMN_NAME = "name"
 ## 📜 License
 
 MIT License - Feel free to use and modify for your projects!
-
----
-
-> "A good traveler has no fixed plans and is not intent on arriving." - Lao Tzu
