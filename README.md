@@ -1,25 +1,25 @@
-# 🗺️ Mapari Place Checker
+# 🗺️ PlacesCheck
 
-![Python](https://img.shields.io/badge/python-3.8+-blue.svg)
-![Supabase](https://img.shields.io/badge/Supabase-3.0+-green.svg)
+![Python](https://img.shields.io/badge/python-3.10+-blue.svg)
+![Supabase](https://img.shields.io/badge/Supabase-API-green.svg)
 ![Rich](https://img.shields.io/badge/Rich_TUI-13.0+-orange.svg)
 
-A beautiful terminal application to verify place names against a set large Supabase database, featuring a colorful TUI interface with progress tracking. 
+A beautiful terminal application to verify place names against a large Supabase database, featuring a colorful and responsive TUI interface with smart parsing and progress tracking.
 
 ## ✨ Features
 
-- **One-Click Operations**: Fetch and compare with simple menu options
-- **Smart List Parsing**: Handles numbered, bulleted, or comma-separated lists
-- **Progress Tracking**: Visual progress bars for data fetching
-- **Windows Compatible**: Full Unicode support with proper encoding
-- **Beautiful Output**: Color-coded results with clean tables
+- **One-Click Operations**: Easily fetch and compare places from terminal  
+- **Smart Parsing**: Supports comma-separated, bulleted, and numbered lists  
+- **Progress Bars**: Clear visual progress using `rich.progress`  
+- **Colorful Output**: Displays results in neatly formatted tables  
+- **Windows Friendly**: Built-in Unicode handling  
 
 ## 🛠️ Setup
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/yourusername/mapari-place-checker.git
-   cd mapari-place-checker
+   git clone https://github.com/raulkolaric/PlacesCheck.git
+   cd PlacesCheck
    ```
 
 2. **Install dependencies**:
@@ -27,56 +27,60 @@ A beautiful terminal application to verify place names against a set large Supab
    pip install -r requirements.txt
    ```
 
-3. **Configure environment**:
-   Create a `.env` file with your Supabase credentials:
+3. **Configure Supabase credentials**:
+   Create a `.env` file:
    ```env
    SUPABASE_URL=your_project_url
-   SUPABASE_SERVICE_ROLE_KEY=your_secret_key
+   SUPABASE_SERVICE_ROLE_KEY=your_service_key
    ```
 
 ## 🚀 Usage
 
+Run the app:
 ```bash
-python src\main.py
+python src/main.py
 ```
 
 ### Menu Options:
-1. **Fetch Data**: Retrieves all place names from `google_places` table
-2. **Compare**: Checks `insert.txt` against fetched data
-3. **Exit**: Quits the application
 
-![TUI Screenshot](https://i.imgur.com/placeholder.png) *(Example screenshot placeholder)*
+1. **Fetch Data** – Loads existing place names from Supabase table `google_places`  
+2. **Compare** – Parses `insert.txt` and compares each name  
+3. **Exit** – Closes the program  
 
-## 📁 File Structure
+📸 *(Add a screenshot of the terminal output here for better presentation)*
+
+## 📁 Project Structure
 
 ```
-.
-├── main.py            # Main application
-├── insert.txt         # Your list of places to check
-├── fetched_data.json  # Auto-generated place data
-├── missing_places.txt # Auto-generated missing places
-├── .env               # Supabase credentials
-└── README.md          # This file
+PlacesCheck/
+├── src/
+│   └── main.py             # Main application
+│   └── compare.py
+│   └── fetch.py
+├── data/          # Input list of place names
+│   └── fetched_data.json       # Cached data from Supabase
+│   └── missing_places.txt      # Auto-saved unmatched entries
+│   └── insert.txt              # Your input against the data from Supabase
+├── .env                    # Your Supabase credentials
+├── requirements.txt        # Python dependencies
+└── README.md               # Project overview
 ```
 
-## 🔧 Configuration
+## ⚙️ Configuration
 
-The application automatically uses:
-- Table: `google_places`
-- Column: `name`
-
-To modify these, edit the constants at the top of `main.py`:
+Default values:
 ```python
 TABLE_NAME = "google_places"
 COLUMN_NAME = "name"
 ```
+Change these in `main.py` to use a different table or column.
 
 ## 💡 Tips
 
-- Place your list in `insert.txt` (supports multiple formats)
-- Missing places save to `missing_places.txt`
-- Press Ctrl+C to cancel any operation
+- Supports copy-pasting from various formats (e.g., Excel, Google Docs)  
+- Automatically saves unmatched entries to `missing_places.txt`  
+- Press `Ctrl+C` to exit safely at any time  
 
 ## 📜 License
 
-MIT License - Feel free to use and modify for your projects!
+MIT License – Free to use, modify, and distribute!
