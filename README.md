@@ -47,7 +47,8 @@ python src/main.py
 2. **Compare** – Parses `insert.txt` and compares each name  
 3. **Exit** – Closes the program  
 
-📸 *(Add a screenshot of the terminal output here for better presentation)*
+📸 ![{3D06C0BF-52BF-443A-A3C1-08FC989EA9EE}](https://github.com/user-attachments/assets/6c50d3b0-6ea7-453d-ae91-6a3d12741905)
+
 
 ## 📁 Project Structure
 
